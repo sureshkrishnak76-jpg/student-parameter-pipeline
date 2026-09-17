@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+    
+    options {
+        timestamps()
+    }
+    
+    stages {
+        stage('Scm Synchronization') {
+            steps {
+                echo '[JENKINS] Fetching active student records configuration environment...'
+                git branch: 'main', url: 'https://github.com/sureshkrishnak76-jpg/student-parameter-pipeline.git'
+            }
+        }
+        
+        stage('Concurrent System Verification') {
+            parallel {
+                stage('Frontend Portal UI Check') {
+                    steps {
+                        echo '[THREAD-A] Executing student dashboard interface render analysis...'
+                        bat 'python frontend_check.py'
+                    }
+                }
+                stage('Backend Database Check') {
+                    steps {
+                        echo '[THREAD-B] Evaluating secure student registry query parameters...'
+                        bat 'python backend_check.py'
+                    }
+                }
+            }
+        }
+        
+        stage('System Summary Verification') {
+            steps {
+                echo '========================================================================'
+                echo '[COMPLETE] Deployment validation metrics for Student System are complete.'
+                echo '========================================================================'
+            }
+        }
+    }
+}
